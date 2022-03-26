@@ -1,0 +1,13 @@
+{
+    "name": "andruida/partybelepteto",
+    "type": "project",
+    "require": {
+        "chillerlan/php-qrcode": "^4.3"
+    },
+    "authors": [
+        {
+            "name": "Andruida",
+            "email": "borus.benedek@gmail.com"
+        }
+    ]
+}
