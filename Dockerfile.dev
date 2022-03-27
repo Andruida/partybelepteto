@@ -8,3 +8,5 @@ RUN apt-get update && apt-get install -y git unzip tzdata dnsutils \
 RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
     install-php-extensions opcache pdo_mysql openssl gd \
  && mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
+
+RUN a2enmod rewrite
