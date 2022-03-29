@@ -10,16 +10,34 @@ if (strlen($URI) != 1 && strlen($URI) - 1 == strrpos($URI, "/")) {
 }
 
 
-session_start();
+session_start([ 
+    'cookie_lifetime' => 86400, 
+    'gc_maxlifetime' => 86400, 
+]); 
+
+if ($URI == "/logout") {
+    session_destroy();
+    header("Location: /");
+    die();
+}
 
 
 $pageMap = [
     "/" => "newticket",
-    "/login" => "login"
+    "/login" => "login",
+    "/scan" => "scan",
+    "/table" => "table"
 ];
 
+$adminPages = ["scan", "table"];
+
 $curpage = "newticket";
-if (isset($pageMap[$URI])) {
+if (isset($pageMap[$URI]) && 
+    (
+        (in_array($pageMap[$URI], $adminPages) && isset($_SESSION["user_id"])) || 
+        !in_array($pageMap[$URI], $adminPages)
+    )
+) {
     $curpage = $pageMap[$URI];
 }
 
@@ -36,6 +54,7 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 
     <title>Beléptető</title>
 </head>
@@ -48,7 +67,13 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
             </button>
             <div class="collapse navbar-collapse nav-pills mt-2" id="navbarSupportedContent">
                 <a class="nav-link<?= ($curpage == "newticket") ? " active" : "" ?> me-auto" aria-current="page" href="/">Jegy adatok megadása</a>
-                <a class="nav-link<?= ($curpage == "login") ? " active" : "" ?>" href="/login">Jegyeladóknak</a>
+                <?php if (!isset($_SESSION["user_id"])) { ?>
+                <a class="nav-link ms-lg-3<?= ($curpage == "login") ? " active" : "" ?>" href="/login">Jegyeladóknak</a>
+                <?php } else { ?>
+                <!--<a class="nav-link ms-lg-3<?= ($curpage == "table") ? " active" : "" ?>" href="/table">Bent lévők</a>-->
+                <a class="nav-link ms-lg-3<?= ($curpage == "scan") ? " active" : "" ?>" href="/scan">Jegy érvényesítés</a>
+                <a class="nav-link ms-lg-3<?= ($curpage == "logout") ? " active" : "" ?>" href="/logout">Kijelentkezés</a>
+                <?php } ?>
             </div>
         </nav>
         <hr>
@@ -56,7 +81,6 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
             <?php require($required_page_file); ?>
         </div>
     </div>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
     <script src="/js/html5-qrcode.min.js"></script>
     <script src="/js/ajax.js"></script>
