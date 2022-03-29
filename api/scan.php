@@ -4,8 +4,15 @@ if (!in_array($_SERVER["REQUEST_METHOD"], ["POST", "GET"])) {
     die();
 }
 
+
 require_once($_SERVER["DOCUMENT_ROOT"] .'/classloader.php');
 session_start();
+
+if (!isset($_SESSION["user_id"])) {
+    http_response_code(403);
+    die();
+}
+
 $conn = new Connection();
 
 if (!empty($_GET["qr"])) {
