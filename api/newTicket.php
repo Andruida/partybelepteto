@@ -40,19 +40,10 @@ $query->bindParam(":NAME", $_POST["name"]);
 $query->bindParam(":TOKEN", $token);
 $query->execute();
 
-use chillerlan\QRCode\{QROptions,QRCode};
-
-$qroptions = new QROptions([
-    "imageBase64" => false,
-    "imageTransparent" => false,
-    "scale" => 20,
-    // "eccLevel" => QRCode::ECC_M
-]);
-$qrcode = new QRCode($qroptions);
 $filename = tempnam(sys_get_temp_dir(), "QRCode");
 unlink($filename);
 $filename .= ".png";
-file_put_contents($filename, $qrcode->render($token));
+file_put_contents($filename, QR::create($token));
 $name = $_POST["name"];
 
 $success = Mailer::mail($_POST["email"], "Megérkezett előfoglalt jegyed", <<<MAILEND

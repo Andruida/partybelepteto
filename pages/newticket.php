@@ -25,14 +25,14 @@ if (!isset($INCLUDED)) {
 <div class="container-fluid">
     <h1 class="mt-3 mb-4">Jegy adatok megadása</h1>
     <div class="form-floating mb-3">
-        <input type="text" class="form-control" onchange="updateValidation($('#name'))" id="name" placeholder="Gyula" required spellcheck="false">
+        <input type="text" class="form-control forminput" onchange="updateValidation($('#name'))" id="name" placeholder="Gyula" required spellcheck="false">
         <label for="name">Név</label>
         <div class="invalid-feedback">
             Kötelező mező!
         </div>
     </div>
     <div class="form-floating mb-3">
-        <input type="email" class="form-control" oninput="$('#givenAddress').text($('#email').val())" onchange="updateValidation($('#email'))" id="email" placeholder="name@newTicket.com" required spellcheck="false">
+        <input type="email" class="form-control forminput" oninput="$('#givenAddress').text($('#email').val())" onchange="updateValidation($('#email'))" id="email" placeholder="name@newTicket.com" required spellcheck="false">
         <label for="email">E-mail cím</label>
         <div class="invalid-feedback" id="invalidformat">
             Egy érvényes e-mail címet adj meg!

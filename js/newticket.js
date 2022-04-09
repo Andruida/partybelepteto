@@ -59,8 +59,10 @@ async function submit() {
         success: function(response) {
             $("#newTicketModal").modal("show")
             $("#loading").hide()
-            updateValidation($("#email"))
-            updateValidation($("#name"))
+            $(".forminput")
+                .removeClass("is-valid")
+                .removeClass("is-invalid")
+                .val("")
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.error(textStatus, errorThrown)

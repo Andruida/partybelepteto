@@ -2,7 +2,7 @@ var html5QrcodeScanner;
 
 $(document).ready(function() {
     html5QrcodeScanner = new Html5QrcodeScanner(
-        "reader", { fps: 10, qrbox: 250, facingMode: "environment" });
+        "reader", { fps: 10, qrbox: 250, videoConstraints: { facingMode: "environment" }});
 
     console.log("hello")
     html5QrcodeScanner.render(onScanSuccess);
@@ -12,6 +12,14 @@ $(document).ready(function() {
 function onScanSuccess(decodedText, decodedResult) {
     // Handle on success condition with the decoded text or result.
     console.log(`Scan result: ${decodedText}`, decodedResult);
+    const result = decodedText.match(/.*t=([^&]*)/)
+    var decodedResult;
+    if (result) {
+        decodedResult = decodeURIComponent(result[1])
+    } else {
+        decodedResult = decodedText
+    }
+
     try {
         html5QrcodeScanner.pause(true)
     } catch (error) {}
@@ -19,19 +27,23 @@ function onScanSuccess(decodedText, decodedResult) {
     $.ajax({
         url:"/api/scan.php",
         method: "GET",
-        data: {qr: decodedText},
+        data: {qr: decodedResult},
         success: function(response) {
             console.log(response)
             $("#name").val(response.name)
             $("#email").val(response.email)
             $("#loading").hide()
+            $(".alert").hide()
             if (response.entered) {
                 $("#already-entered-alert").show()
+            } else {
+                $("#not-entered-alert").show()
             }
         },
         error: function(jqXHR) {
             $("#loading").hide()
             if (jqXHR.status == 404) {
+                $(".alert").hide()
                 $("#invalid-alert").show()
             }
         }
@@ -39,12 +51,10 @@ function onScanSuccess(decodedText, decodedResult) {
 }
 
 function cancel() {
-    $("#name").val("")
-    $("#email").val("")
+    $(".forminput").val("")
     $("#loading").hide()
     $(".alert").hide()
-    $("#email").removeClass("is-valid").removeClass(".is-invalid")
-    $("#name").removeClass("is-valid").removeClass(".is-invalid")
+    $(".forminput").removeClass("is-valid").removeClass(".is-invalid")
     try {
         html5QrcodeScanner.resume()
     } catch (error) { }

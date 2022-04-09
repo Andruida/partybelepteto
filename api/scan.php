@@ -8,10 +8,6 @@ if (!in_array($_SERVER["REQUEST_METHOD"], ["POST", "GET"])) {
 require_once($_SERVER["DOCUMENT_ROOT"] .'/classloader.php');
 session_start();
 
-if (!isset($_SESSION["user_id"])) {
-    http_response_code(403);
-    die();
-}
 
 $conn = new Connection();
 
@@ -29,10 +25,14 @@ if (!empty($_GET["qr"])) {
     die();
 }
 
+if (!isset($_SESSION["user_id"])) {
+    http_response_code(403);
+    die();
+}
+
 #######################################################
 // POST side
 #######################################################
-use chillerlan\QRCode\{QROptions,QRCode};
 
 function checkEmailAvailability($email) {
     global $conn;
@@ -80,17 +80,10 @@ if (checkEmailAvailability($_POST["email"])) {
     $query->bindParam(":TOKEN", $token);
     $query->execute();
 
-    $qroptions = new QROptions([
-        "imageBase64" => false,
-        "imageTransparent" => false,
-        "scale" => 20,
-        // "eccLevel" => QRCode::ECC_M
-    ]);
-    $qrcode = new QRCode($qroptions);
     $filename = tempnam(sys_get_temp_dir(), "QRCode");
     unlink($filename);
     $filename .= ".png";
-    file_put_contents($filename, $qrcode->render($token));
+    file_put_contents($filename, QR::create($token));
     $name = $_POST["name"];
 
     $success = Mailer::mail($_POST["email"], "Megérkezett vásárolt jegyed", <<<MAILEND
@@ -107,6 +100,8 @@ if (checkEmailAvailability($_POST["email"])) {
     $query->bindParam(":EMAIL", $_POST["email"]);
     $query->bindParam(":NAME", $_POST["name"]);
     $query->execute();
+
+    $name = $_POST["name"];
 
     $success = Mailer::mail($_POST["email"], "Érvényesítetted a jegyed", <<<MAILEND
 
