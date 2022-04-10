@@ -55,6 +55,7 @@ function cancel() {
     $("#loading").hide()
     $(".alert").hide()
     $(".forminput").removeClass("is-valid").removeClass(".is-invalid")
+    removeParam("t")
     try {
         html5QrcodeScanner.resume()
     } catch (error) { }

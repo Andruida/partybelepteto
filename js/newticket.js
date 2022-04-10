@@ -1,21 +1,3 @@
-function checkEmailAvailability(email) {
-    return new Promise(function(resolve, reject) {
-        $.ajax({
-            url: "/api/checkEmail.php",
-            data: {email},
-            method: "GET",
-            success: function(response) {
-                resolve(!response.exists)
-            },
-            error: function(jqXHR, textStatus, errorThrown) {
-                console.error(textStatus, errorThrown)
-            }
-        })
-    })
-}
-
-
-
 async function updateValidation($obj) {
     var valid;
     if ($obj.prop("type") == "email") {

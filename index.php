@@ -17,7 +17,7 @@ session_start([
 
 if ($URI == "/logout") {
     session_destroy();
-    header("Location: /");
+    header("Location: /login");
     die();
 }
 
@@ -26,7 +26,8 @@ $pageMap = [
     "/" => "newticket",
     "/login" => "login",
     "/scan" => "scan",
-    "/table" => "table"
+    "/table" => "table",
+    "/query" => "query"
 ];
 
 $adminPages = ["table"];
@@ -61,7 +62,7 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
 
 <body>
     <div class="container">
-        <nav class="navbar navbar-expand-lg navbar-light bg-light my-3 ">
+        <nav class="navbar navbar-expand-lg navbar-light my-3 ">
             <button class="navbar-toggler ms-auto " type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -71,7 +72,8 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
                 <?php if (!isset($_SESSION["user_id"])) { ?>
                 <a class="nav-link ms-lg-3<?= ($curpage == "login") ? " active" : "" ?>" href="/login">Jegyeladóknak</a>
                 <?php } else { ?>
-                <!--<a class="nav-link ms-lg-3<?= ($curpage == "table") ? " active" : "" ?>" href="/table">Bent lévők</a>-->
+                <a class="nav-link ms-lg-3<?= ($curpage == "table") ? " active" : "" ?>" href="/table">Bent lévők</a>
+                <a class="nav-link ms-lg-3<?= ($curpage == "query") ? " active" : "" ?>" href="/query">Érvényesítés e-mail cím alapján</a>
                 <a class="nav-link ms-lg-3<?= ($curpage == "logout") ? " active" : "" ?>" href="/logout">Kijelentkezés</a>
                 <?php } ?>
             </div>

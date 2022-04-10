@@ -9,11 +9,16 @@ if (empty($_GET["email"])) {
 
 $conn = new Connection();
 
-$query = $conn->prepare("SELECT `id` FROM `tickets` WHERE `email` = :EMAIL LIMIT 1 ");
+$query = $conn->prepare("SELECT `id`, `qrcode` FROM `tickets` WHERE `email` = :EMAIL LIMIT 1 ");
 $query->bindValue(":EMAIL", $_GET["email"]);
 $query->execute();
 header("Content-Type: application/json");
-echo json_encode(array(
-    "exists" => ($query->rowCount() > 0)
-));
+$data = array(
+    "exists" => ($query->rowCount() > 0),
+    "qrcode" => null
+);
+if ($row = $query->fetch(PDO::FETCH_ASSOC)) {
+    $data["qrcode"] = $row["qrcode"];
+}
+echo json_encode($data);
 ?>
