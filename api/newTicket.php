@@ -32,11 +32,31 @@ if (empty($_POST["name"])) {
 }
 $_POST["name"] = trim($_POST["name"]);
 
+if (empty($_POST["class"]) || !in_array($_POST["class"], ["A", "B", "C", "D", "E", "F"])) {
+    http_response_code(400);
+    die("Hiányzó osztály!");
+}
+
+if (empty($_POST["group"])) {
+    $_POST["group"] = null;
+} else if (intval($_POST["group"]) < 0 || intval($_POST["group"]) > 12) {
+    http_response_code(400);
+    die("Nem lehet ilyen kolis csoport!");
+}
+
+if (empty($_POST["grade"]) || intval($_POST["grade"]) < 7 || intval($_POST["grade"]) > 12) {
+    http_response_code(400);
+    die("Nem lehet ilyen évfolyam!");
+}
+
 $token = base64_encode(random_bytes(6));
 
-$query = $conn -> prepare("INSERT INTO `tickets`(`email`, `name`, `qrcode`) VALUES (:EMAIL, :NAME, :TOKEN)");
+$query = $conn -> prepare("INSERT INTO `tickets`(`email`, `name`, `grade`, `class`, `hostel_group`, `qrcode`) VALUES (:EMAIL, :NAME, :GRADE, :CLASS, :HGROUP, :TOKEN)");
 $query->bindParam(":EMAIL", $_POST["email"]);
 $query->bindParam(":NAME", $_POST["name"]);
+$query->bindParam(":GRADE", $_POST["grade"]);
+$query->bindParam(":CLASS", $_POST["class"]);
+$query->bindParam(":HGROUP", $_POST["group"]);
 $query->bindParam(":TOKEN", $token);
 $query->execute();
 

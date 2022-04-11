@@ -1,8 +1,12 @@
 async function updateValidation($obj) {
+    if (!($obj instanceof jQuery)) {
+        $obj = $($obj)
+    }
+
     var valid;
     if ($obj.prop("type") == "email") {
         var formatValid = validateEmail($obj.val())
-        valid = (formatValid && await checkEmailAvailability($obj.val()))
+        valid = (Boolean(formatValid) && await checkEmailAvailability($obj.val()))
         if (formatValid && !valid) {
             $obj.parent().find("#invalidformat").hide()
             $obj.parent().find("#alreadytaken").show()
@@ -16,6 +20,12 @@ async function updateValidation($obj) {
     } else if ($obj.prop("type") == "text") {
         valid = (typeof $obj.val() == 'string' && $obj.val().length > 0)
         console.log(typeof $obj.val(), $obj.val().length)
+    } else if ($obj.prop("type") == "select-one") {
+        if ($obj.prop("id") == "group") {
+            valid = true;
+        } else {
+            valid = ($obj.val().length > 0)
+        }
     }
 
     $obj.removeClass("is-"+(valid?"in":"")+"valid")
@@ -25,9 +35,8 @@ async function updateValidation($obj) {
 }
 
 async function submit() {
-    var a = await updateValidation($("#email"))
-    var b = await updateValidation($("#name"))
-    if (!a || !b) {
+    var valids = await Promise.all($(".forminput").toArray().map(updateValidation))
+    if (!valids.every(function(k){return k})) {
         return false;
     }
     $("#loading").show()
@@ -35,7 +44,10 @@ async function submit() {
         url: "/api/newTicket.php",
         data: {
             name: $("#name").val(), 
-            email: $("#email").val()
+            email: $("#email").val(),
+            grade: $("#grade").val(),
+            class: $("#class").val(),
+            group: $("#group").val(),
         },
         method: "POST",
         success: function(response) {

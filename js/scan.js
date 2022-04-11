@@ -32,10 +32,15 @@ function onScanSuccess(decodedText, decodedResult) {
             console.log(response)
             $("#name").val(response.name)
             $("#email").val(response.email)
+            $("#grade").val(response.grade)
+            $("#class").val(response.class)
+            $("#group").val(response.group)
             $("#loading").hide()
             $(".alert").hide()
+            $("#submitBtn").prop("disabled", false)
             if (response.entered) {
                 $("#already-entered-alert").show()
+                $("#submitBtn").prop("disabled", true)
             } else {
                 $("#not-entered-alert").show()
             }
@@ -55,6 +60,7 @@ function cancel() {
     $("#loading").hide()
     $(".alert").hide()
     $(".forminput").removeClass("is-valid").removeClass(".is-invalid")
+    $("#submitBtn").prop("disabled", false)
     removeParam("t")
     try {
         html5QrcodeScanner.resume()
@@ -63,11 +69,21 @@ function cancel() {
 }
 
 function updateValidation($obj) {
+    if (!($obj instanceof jQuery)) {
+        $obj = $($obj)
+    }
+
     var valid;
     if ($obj.prop("type") == "email") {
         valid = validateEmail($obj.val())
     } else if ($obj.prop("type") == "text") {
         valid = (typeof $obj.val() == 'string' && $obj.val().length > 0)
+    } else if ($obj.prop("type") == "select-one") {
+        if ($obj.prop("id") == "group") {
+            valid = true;
+        } else {
+            valid = ($obj.val().length > 0)
+        }
     }
 
     $obj.removeClass("is-"+(valid?"in":"")+"valid")
@@ -77,6 +93,9 @@ function updateValidation($obj) {
 }
 
 function submit() {
+    if (!$(".forminput").toArray().every(updateValidation)) {
+        return false;
+    }
     if (!updateValidation($("#email")) || !updateValidation($("#name"))) {
         return false;
     }
@@ -86,7 +105,10 @@ function submit() {
         method: "POST",
         data: {
             name: $("#name").val(), 
-            email: $("#email").val()
+            email: $("#email").val(),
+            grade: $("#grade").val(),
+            class: $("#class").val(),
+            group: $("#group").val(),
         },
         success: function() {
             cancel()

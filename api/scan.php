@@ -12,7 +12,7 @@ session_start();
 $conn = new Connection();
 
 if (!empty($_GET["qr"])) {
-    $query = $conn -> prepare("SELECT `email`, `name`, `entered` FROM `tickets` WHERE `qrcode` = :QR");
+    $query = $conn -> prepare("SELECT `email`, `name`, `grade`, `class`, `hostel_group`, `entered` FROM `tickets` WHERE `qrcode` = :QR");
     $query->bindValue(":QR", $_GET["qr"]);
     $query->execute();
     if ($query->rowCount() <= 0) {
@@ -70,13 +70,33 @@ if (empty($_POST["name"])) {
 }
 $_POST["name"] = trim($_POST["name"]);
 
+if (empty($_POST["class"]) || !in_array($_POST["class"], ["A", "B", "C", "D", "E", "F"])) {
+    http_response_code(400);
+    die("Hiányzó osztály!");
+}
+
+if (empty($_POST["group"])) {
+    $_POST["group"] = null;
+} else if (intval($_POST["group"]) < 0 || intval($_POST["group"]) > 12) {
+    http_response_code(400);
+    die("Nem lehet ilyen kolis csoport!");
+}
+
+if (empty($_POST["grade"]) || intval($_POST["grade"]) < 7 || intval($_POST["grade"]) > 12) {
+    http_response_code(400);
+    die("Nem lehet ilyen évfolyam!");
+}
+
 if (checkEmailAvailability($_POST["email"])) {
 
     $token = base64_encode(random_bytes(6));
 
-    $query = $conn -> prepare("INSERT INTO `tickets`(`email`, `name`, `qrcode`, `entered`) VALUES (:EMAIL, :NAME, :TOKEN, CURRENT_TIMESTAMP)");
+    $query = $conn -> prepare("INSERT INTO `tickets`(`email`, `name`, `grade`, `class`, `hostel_group`, `qrcode`, `entered`) VALUES (:EMAIL, :NAME, :GRADE, :CLASS, :HGROUP, :TOKEN, CURRENT_TIMESTAMP)");
     $query->bindParam(":EMAIL", $_POST["email"]);
     $query->bindParam(":NAME", $_POST["name"]);
+    $query->bindParam(":GRADE", $_POST["grade"]);
+    $query->bindParam(":CLASS", $_POST["class"]);
+    $query->bindParam(":HGROUP", $_POST["group"]);
     $query->bindParam(":TOKEN", $token);
     $query->execute();
 
@@ -96,9 +116,12 @@ if (checkEmailAvailability($_POST["email"])) {
 
     unlink($filename);
 } else if (checkEntered($_POST["email"]) === null) {
-    $query = $conn -> prepare("UPDATE `tickets` SET `name` = :NAME, `entered` = CURRENT_TIMESTAMP WHERE `email` = :EMAIL");
+    $query = $conn -> prepare("UPDATE `tickets` SET `name` = :NAME, `grade` = :GRADE, `class` = :CLASS, `hostel_group` = :HGROUP, `entered` = CURRENT_TIMESTAMP WHERE `email` = :EMAIL");
     $query->bindParam(":EMAIL", $_POST["email"]);
     $query->bindParam(":NAME", $_POST["name"]);
+    $query->bindParam(":GRADE", $_POST["grade"]);
+    $query->bindParam(":CLASS", $_POST["class"]);
+    $query->bindParam(":HGROUP", $_POST["group"]);
     $query->execute();
 
     $name = $_POST["name"];

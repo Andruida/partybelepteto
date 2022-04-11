@@ -41,6 +41,55 @@ if (!isset($INCLUDED)) {
             Már foglalt!
         </div>
     </div>
+    <div class="row mb-3 g-2">
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select forminput" id="grade" onchange="updateValidation($('#grade'))" >
+                    <option selected></option>
+                    <?php
+                        for ($i = 7; $i <= 12; $i++) {
+                            echo "<option value=\"$i\">$i</option>".PHP_EOL;
+                        }
+                    ?>
+                </select>
+                <label for="grade">Évfolyam</label>
+                <div class="invalid-feedback">
+                    Kötelező megadni!
+                </div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select forminput" id="class" onchange="updateValidation($('#class'))" >
+                    <option selected></option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                </select>
+                <label for="class">Osztály</label>
+                <div class="invalid-feedback">
+                    Kötelező megadni!
+                </div>
+            </div>
+        </div>
+        <div class="w-100 d-block d-sm-none"></div>
+        <div class="col">
+            <div class="form-floating">
+                <select class="form-select forminput" id="group" onchange="updateValidation($('#group'))" >
+                    <option selected></option>
+                    <?php
+                        for ($i = 1; $i <= 12; $i++) {
+                            echo "<option value=\"$i\">$i</option>".PHP_EOL;
+                        }
+                    ?>
+                </select>
+                <label for="group">Csoport</label>
+            </div>
+        </div>
+    </div>
     <div class="row col-sm-4 mt-4 mx-auto">
         <button type="button" onclick="submit()" class="btn btn-primary">Mentés</button>
         <div class="d-flex justify-content-center">
