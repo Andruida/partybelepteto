@@ -9,20 +9,7 @@ $(document).ready(function() {
 })
 
 
-function onScanSuccess(decodedText, decodedResult) {
-    // Handle on success condition with the decoded text or result.
-    console.log(`Scan result: ${decodedText}`, decodedResult);
-    const result = decodedText.match(/.*t=([^&]*)/)
-    var decodedResult;
-    if (result) {
-        decodedResult = decodeURIComponent(result[1])
-    } else {
-        decodedResult = decodedText
-    }
-
-    try {
-        html5QrcodeScanner.pause(true)
-    } catch (error) {}
+function handleQR(decodedResult) {
     $("#loading").show()
     $.ajax({
         url:"/api/scan.php",
@@ -34,7 +21,7 @@ function onScanSuccess(decodedText, decodedResult) {
             $("#email").val(response.email)
             $("#grade").val(response.grade)
             $("#class").val(response.class)
-            $("#group").val(response.group)
+            $("#group").val(response.hostel_group)
             $("#loading").hide()
             $(".alert").hide()
             $("#submitBtn").prop("disabled", false)
@@ -53,6 +40,27 @@ function onScanSuccess(decodedText, decodedResult) {
             }
         }
     })
+}
+
+var currentQR;
+
+function onScanSuccess(decodedText, decodedThing) {
+    // Handle on success condition with the decoded text or result.
+    console.log(`Scan result: ${decodedText}`, decodedThing);
+    const result = decodedText.match(/.*t=([^&]*)/)
+    var decodedResult;
+    if (result) {
+        decodedResult = decodeURIComponent(result[1])
+    } else {
+        decodedResult = decodedText
+    }
+
+    currentQR = decodedResult;
+
+    try {
+        html5QrcodeScanner.pause(true)
+    } catch (error) {}
+    handleQR(decodedResult)
 }
 
 function cancel() {
@@ -111,7 +119,11 @@ function submit() {
             group: $("#group").val(),
         },
         success: function() {
-            cancel()
+            if (currentQR) {
+                handleQR(currentQR)
+            } else {
+                cancel()
+            }
         },
         error: function(jqXHR, textStatus, errorThrown) {
             console.error(textStatus, errorThrown)

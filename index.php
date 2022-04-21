@@ -27,10 +27,11 @@ $pageMap = [
     "/login" => "login",
     "/scan" => "scan",
     "/table" => "table",
-    "/query" => "query"
+    "/query" => "query",
+    "/test" => "test",
 ];
 
-$adminPages = ["table"];
+$adminPages = ["query", "table"];
 
 $curpage = "newticket";
 if (isset($pageMap[$URI]) && 
@@ -67,12 +68,12 @@ $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse nav-pills mt-2" id="navbarSupportedContent">
-                <a class="nav-link<?= ($curpage == "newticket") ? " active" : "" ?>" aria-current="page" href="/">Jegy regisztráció</a>
+                <a class="nav-link<?= ($curpage == "newticket") ? " active" : "" ?>" href="/">Jegy regisztráció</a>
                 <a class="nav-link ms-lg-3<?= ($curpage == "scan") ? " active" : "" ?> me-auto" href="/scan">Jegy beolvasás</a>
                 <?php if (!isset($_SESSION["user_id"])) { ?>
                 <a class="nav-link ms-lg-3<?= ($curpage == "login") ? " active" : "" ?>" href="/login">Jegyeladóknak</a>
                 <?php } else { ?>
-                <a class="nav-link ms-lg-3<?= ($curpage == "table") ? " active" : "" ?>" href="/table">Bent lévők</a>
+                <a class="nav-link ms-lg-3<?= ($curpage == "table") ? " active" : "" ?>" href="/table">Táblázatok</a>
                 <a class="nav-link ms-lg-3<?= ($curpage == "query") ? " active" : "" ?>" href="/query">Érvényesítés e-mail cím alapján</a>
                 <a class="nav-link ms-lg-3<?= ($curpage == "logout") ? " active" : "" ?>" href="/logout">Kijelentkezés</a>
                 <?php } ?>
