@@ -7,6 +7,11 @@ if ($_SERVER["REQUEST_METHOD"] != "POST") {
 
 require_once($_SERVER["DOCUMENT_ROOT"] .'/classloader.php');
 
+if (!Config::enabled()) {
+    http_response_code(403);
+    die("Disabled");
+}
+
 $conn = new Connection();
 
 function checkEmailAvailability($email) {

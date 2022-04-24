@@ -8,6 +8,11 @@ if (!in_array($_SERVER["REQUEST_METHOD"], ["POST", "GET"])) {
 require_once($_SERVER["DOCUMENT_ROOT"] .'/classloader.php');
 session_start();
 
+if (!Config::enabled()) {
+    http_response_code(403);
+    die("Disabled");
+}
+
 
 $conn = new Connection();
 

@@ -11,7 +11,7 @@ if (isset($_GET["onlyentered"])) {
 } else {
     $query = $conn->query("SELECT * FROM `tickets` ORDER BY `name` ASC");
 }
-$csv = '"Név";"Osztály";"Csoport";"Bement"'."\n";
+$csv = '"Név";"Évfolyam";"Osztály";"Csoport";"Bement"'."\n";
 
 
 ob_start();
@@ -20,7 +20,7 @@ ob_start();
             if ($row["qrcode"] == "tesztelek") {
                 continue;
             }
-            $csv .= '"'.$row["name"].'";"'.$row["grade"].'.'.$row["class"].'";"'.$row["hostel_group"].'"';
+            $csv .= '"'.$row["name"].'";"'.$row["grade"].'";"'.$row["class"].'";"'.$row["hostel_group"].'"';
             if ($row["entered"]) {
                 $csv .= ';"'.date("H:i",strtotime($row["entered"])).'"';
             } else {
@@ -47,7 +47,7 @@ $html = ob_get_clean();
         <button class="btn btn-success">Letöltés CSV-ként</button>
     </a>
 </div>
-<table class="table table-sm table-striped table-hover table-responsive">
+<table class="table table-sm table-hover table-responsive">
     <thead>
         <tr>
             <th scope="col">Név</th>

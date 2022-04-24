@@ -2,6 +2,11 @@
 
 require_once($_SERVER["DOCUMENT_ROOT"] .'/classloader.php');
 
+if (!Config::enabled()) {
+    http_response_code(403);
+    die("Disabled");
+}
+
 if (empty($_GET["email"])) {
     http_response_code(400);
     die();

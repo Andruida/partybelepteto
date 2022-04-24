@@ -3,6 +3,9 @@
 $INCLUDED = true;
 require_once($_SERVER["DOCUMENT_ROOT"] . '/classloader.php');
 
+
+$ENABLED = Config::enabled();
+
 $queryMarker = strpos($_SERVER["REQUEST_URI"], "?");
 $URI = ($queryMarker) ? substr($_SERVER["REQUEST_URI"], 0, $queryMarker) : $_SERVER["REQUEST_URI"];
 if (strlen($URI) != 1 && strlen($URI) - 1 == strrpos($URI, "/")) {
@@ -32,6 +35,7 @@ $pageMap = [
 ];
 
 $adminPages = ["query", "table"];
+$reducedPages = ["login", "table"];
 
 $curpage = "newticket";
 if (isset($pageMap[$URI]) && 
@@ -43,7 +47,15 @@ if (isset($pageMap[$URI]) &&
     $curpage = $pageMap[$URI];
 }
 
-$required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
+if (!$ENABLED) {
+    if (in_array($curpage, $reducedPages)) {
+        $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
+    } else {
+        $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/closed.php";
+    }
+} else {
+    $required_page_file = $_SERVER["DOCUMENT_ROOT"] . "/pages/" . $curpage . ".php";
+}
 
 ?>
 
